@@ -9,46 +9,22 @@ const io = new Server(server);
 
 app.use(express.static("public"));
 
-const users = {};      // socket.id -> username
-const friends = {};    // username -> friends list
-
+// 👇 gerçek zamanlı chat
 io.on("connection", (socket) => {
 
-    // 👤 kullanıcı kayıt
-    socket.on("register", (username) => {
+    console.log("Kullanıcı bağlandı");
 
-        users[socket.id] = username;
-
-        if (!friends[username]) {
-            friends[username] = [];
-        }
-
-        socket.emit("friend-list", friends[username]);
-    });
-
-    // ➕ arkadaş ekleme
-    socket.on("add-friend", (friendName) => {
-
-        const user = users[socket.id];
-
-        if (!user) return;
-
-        if (!friends[user]) {
-            friends[user] = [];
-        }
-
-        if (!friends[user].includes(friendName)) {
-            friends[user].push(friendName);
-        }
-
-        socket.emit("friend-list", friends[user]);
+    // mesaj geldiğinde herkese gönder
+    socket.on("message", (data) => {
+        io.emit("message", data);
     });
 
     socket.on("disconnect", () => {
-        delete users[socket.id];
+        console.log("Kullanıcı çıktı");
     });
+
 });
 
-server.listen(3000, () => {
+server.listen(process.env.PORT || 3000, () => {
     console.log("DISCA çalışıyor 🚀");
 });
