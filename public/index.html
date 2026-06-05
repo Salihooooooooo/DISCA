@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DISCA</title>
+
+<!-- 🔥 FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- 🔐 LOGIN SCREEN -->
+<div id="loginScreen">
+
+    <div class="login-card">
+
+        <h1>DISCA</h1>
+
+        <input id="username" placeholder="Kullanıcı adı">
+
+        <button onclick="login()">Giriş Yap</button>
+        <button onclick="register()">Kaydol</button>
+
+    </div>
+
+</div>
+
+<!-- 💬 APP -->
+<div class="app" style="display:none;">
+
+    <!-- LEFT SERVER BAR -->
+    <div class="servers">
+
+        <div class="logo">D</div>
+
+        <div class="server"></div>
+        <div class="server"></div>
+        <div class="server"></div>
+
+    </div>
+
+    <!-- CHANNELS -->
+    <div class="channels">
+
+        <h2>DISCA</h2>
+
+        <div class="channel" onclick="switchChannel('genel')"># genel</div>
+        <div class="channel" onclick="switchChannel('oyun')"># oyun</div>
+        <div class="channel" onclick="switchChannel('sohbet')"># sohbet</div>
+
+        <h3 style="margin-top:20px;">🔊 Sesli Odalar</h3>
+
+        <div class="channel">🔊 Genel Ses</div>
+        <div class="channel">🔊 Oyun Odası</div>
+        <div class="channel">🔊 Takım Odası</div>
+
+        <button onclick="joinVoice()" style="margin-top:15px;">
+            🎧 Sesli Odaya Katıl
+        </button>
+
+    </div>
+
+    <!-- CHAT -->
+    <div class="chat">
+
+        <div class="chat-header" id="chatHeader">
+            # genel
+        </div>
+
+        <ul id="messages"></ul>
+
+        <div class="message-box">
+
+            <input id="messageInput" placeholder="Mesaj yaz...">
+
+            <button onclick="sendMessage()">Gönder</button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 🔥 SOCKET.IO -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- APP JS -->
+<script src="app.js"></script>
+
+</body>
+</html>
