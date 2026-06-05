@@ -1,42 +1,54 @@
+
 const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
+
 const app = express();
-const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+const server = http.createServer(app);
+const io = new Server(server);
 
 app.use(express.static("public"));
 
-// 💬 CHAT + 🎧 VOICE SIGNAL SERVER
+const users = {};      // socket.id -> username
+const friends = {};    // username -> friends list
+
 io.on("connection", (socket) => {
 
-    console.log("Kullanıcı bağlandı:", socket.id);
+    // 👤 kullanıcı kayıt
+    socket.on("register", (username) => {
 
-    // 💬 MESAJLAR
-    socket.on("message", (msg) => {
-        io.emit("message", msg);
+        users[socket.id] = username;
+
+        if (!friends[username]) {
+            friends[username] = [];
+        }
+
+        socket.emit("friend-list", friends[username]);
     });
 
-    // 🎧 ODAYA KATILMA
-    socket.on("join-room", (room) => {
-        socket.join(room);
-        console.log(socket.id, "odaya girdi:", room);
-    });
+    // ➕ arkadaş ekleme
+    socket.on("add-friend", (friendName) => {
 
-    // 🔊 WEBRTC SIGNAL (SES VERİSİ DEĞİL, BAĞLANTI VERİSİ)
-    socket.on("signal", (data) => {
-        // data: { room, signal }
-        socket.to(data.room).emit("signal", {
-            signal: data.signal,
-            from: socket.id
-        });
+        const user = users[socket.id];
+
+        if (!user) return;
+
+        if (!friends[user]) {
+            friends[user] = [];
+        }
+
+        if (!friends[user].includes(friendName)) {
+            friends[user].push(friendName);
+        }
+
+        socket.emit("friend-list", friends[user]);
     });
 
     socket.on("disconnect", () => {
-        console.log("Kullanıcı çıktı:", socket.id);
+        delete users[socket.id];
     });
-
 });
 
-// 🚀 SERVER BAŞLAT
-http.listen(3000, () => {
+server.listen(3000, () => {
     console.log("DISCA çalışıyor 🚀");
 });
